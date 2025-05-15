@@ -41,4 +41,24 @@ class PersonService {
         return DozerMapper.parseObject(repository.save(entity), PersonVO::class.java)
     }
 
+    fun update(person: PersonVO): PersonVO{
+        logger.info("Updating one person ${person.key}")
+        val entity = repository.findById(person.key)
+            .orElseThrow { ResourceNotFoundException("No records found for this ID!") }
+
+        entity.firstName = person.firstName
+        entity.lastName = person.lastName
+        entity.address = person.address
+        entity.gender = person.gender
+
+        return DozerMapper.parseObject(repository.save(entity), PersonVO::class.java)
+    }
+
+    fun delete(id: Long){
+        logger.info("Deleting one person $id")
+        val entity = repository.findById(id)
+            .orElseThrow { ResourceNotFoundException("No records found for this ID!") }
+        repository.delete(entity)
+    }
+
 }
