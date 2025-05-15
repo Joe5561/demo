@@ -2,8 +2,10 @@ package br.com.joe.demo.service
 
 import br.com.joe.demo.data.vo.v1.PersonVO
 import br.com.joe.demo.exception.ResourceNotFoundException
+import br.com.joe.demo.exception.UserNotFoundException
 import br.com.joe.demo.mapper.DozerMapper
 import br.com.joe.demo.mapper.custom.PersonMapper
+import br.com.joe.demo.model.Person
 import br.com.joe.demo.repository.PersonRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
@@ -23,7 +25,7 @@ class PersonService {
     fun findById(id: Long): PersonVO {
         logger.info("Finding one person")
         var person = repository.findById(id)
-            .orElseThrow { ResourceNotFoundException("No records found for this ID!") }
+            .orElseThrow { UserNotFoundException("No records found for this ID!") }
         return DozerMapper.parseObject(person, PersonVO::class.java)
     }
 
@@ -31,6 +33,12 @@ class PersonService {
         logger.info("Finding all people!")
         val persons = repository.findAll()
         return DozerMapper.parseListObject(persons, PersonVO::class.java)
+    }
+
+    fun create(person: PersonVO): PersonVO {
+        logger.info("Creating one person ${person.firstName}")
+        var entity: Person = DozerMapper.parseObject(person, Person::class.java)
+        return DozerMapper.parseObject(repository.save(entity), PersonVO::class.java)
     }
 
 }

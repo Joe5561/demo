@@ -3,18 +3,19 @@ package br.com.joe.demo.data.vo.v1
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.github.dozermapper.core.Mapping
+import org.hibernate.metamodel.RepresentationMode
 
-@JsonPropertyOrder("id", "address", "fist_name", "last_name", "gender")
+@JsonPropertyOrder("id", "firstName", "lastName", "address", "gender")
 data class PersonVO (
 
     @Mapping("id")
     @field:JsonProperty("id")
     var key: Long = 0,
 
-    @field:JsonProperty("fist_name")
+    @field:JsonProperty("firstName")
     var firstName: String = "",
 
-    @field:JsonProperty("last_name")
+    @field:JsonProperty("lastName")
     var lastName: String = "",
 
     @field:JsonProperty("address")
