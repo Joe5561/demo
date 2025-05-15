@@ -45,10 +45,12 @@ class PersonController {
     }
 
     @PutMapping(
+        value = ["/{id}"],
         produces = [MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML],
         consumes = [MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YML]
     )
-    fun update(@RequestBody person: PersonVO): PersonVO {
+    fun update(@PathVariable id: Long, @RequestBody person: PersonVO): PersonVO {
+        person.key = id
         return service.update(person)
     }
 
