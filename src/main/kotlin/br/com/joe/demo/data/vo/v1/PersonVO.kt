@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonPropertyOrder
 import com.github.dozermapper.core.Mapping
 import org.hibernate.metamodel.RepresentationMode
+import org.springframework.hateoas.RepresentationModel
 
 @JsonPropertyOrder("id", "firstName", "lastName", "address", "gender")
 data class PersonVO (
@@ -23,4 +24,4 @@ data class PersonVO (
 
     @field:JsonProperty("gender")
     var gender: String = ""
-)
+): RepresentationModel<PersonVO>()

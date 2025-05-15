@@ -1,5 +1,6 @@
 package br.com.joe.demo.service
 
+import br.com.joe.demo.controller.PersonController
 import br.com.joe.demo.data.vo.v1.PersonVO
 import br.com.joe.demo.exception.ResourceNotFoundException
 import br.com.joe.demo.exception.UserNotFoundException
@@ -7,6 +8,7 @@ import br.com.joe.demo.mapper.DozerMapper
 import br.com.joe.demo.mapper.custom.PersonMapper
 import br.com.joe.demo.model.Person
 import br.com.joe.demo.repository.PersonRepository
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import java.util.logging.Logger
@@ -25,20 +27,31 @@ class PersonService {
     fun findById(id: Long): PersonVO {
         logger.info("Finding one person")
         var person = repository.findById(id)
-            .orElseThrow { UserNotFoundException("No records found for this ID!") }
-        return DozerMapper.parseObject(person, PersonVO::class.java)
+            .orElseThrow { ResourceNotFoundException("No records found for this ID!") }
+        val personVO: PersonVO = DozerMapper.parseObject(person, PersonVO::class.java)
+        val withSelfRelationSet = linkTo(PersonController::class.java).slash(personVO.key).withSelfRel()
+        personVO.add(withSelfRelationSet)
+        return personVO
     }
 
     fun findAll(): List<PersonVO> {
         logger.info("Finding all people!")
         val persons = repository.findAll()
-        return DozerMapper.parseListObject(persons, PersonVO::class.java)
+        val vos = DozerMapper.parseListObject(persons, PersonVO::class.java)
+        for (person in vos){
+            val withSelfRelationSet = linkTo(PersonController::class.java).slash(person.key).withSelfRel()
+            person.add(withSelfRelationSet)
+        }
+        return vos
     }
 
     fun create(person: PersonVO): PersonVO {
         logger.info("Creating one person ${person.firstName}")
         var entity: Person = DozerMapper.parseObject(person, Person::class.java)
-        return DozerMapper.parseObject(repository.save(entity), PersonVO::class.java)
+        val personVO: PersonVO =  DozerMapper.parseObject(repository.save(entity), PersonVO::class.java)
+        val withSelfRelationSet = linkTo(PersonController::class.java).slash(personVO.key).withSelfRel()
+        personVO.add(withSelfRelationSet)
+        return personVO
     }
 
     fun update(person: PersonVO): PersonVO{
@@ -51,7 +64,10 @@ class PersonService {
         entity.address = person.address
         entity.gender = person.gender
 
-        return DozerMapper.parseObject(repository.save(entity), PersonVO::class.java)
+        val personVO: PersonVO = DozerMapper.parseObject(repository.save(entity), PersonVO::class.java)
+        val withSelfRelationSet = linkTo(PersonController::class.java).slash(personVO.key).withSelfRel()
+        personVO.add(withSelfRelationSet)
+        return personVO
     }
 
     fun delete(id: Long){
