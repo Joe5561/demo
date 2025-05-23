@@ -71,5 +71,4 @@ class BookService {
             .orElseThrow { ResourceNotFoundException("No records found for this ID!") }
         repository.delete(entity)
     }
-
 }

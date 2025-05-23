@@ -1,6 +1,7 @@
 package br.com.joe.demo.exception.handler
 
 import br.com.joe.demo.exception.ExceptionResponse
+import br.com.joe.demo.exception.InvalidJwtAuthenticationException
 import br.com.joe.demo.exception.ResourceNotFoundException
 import br.com.joe.demo.exception.UserNotFoundException
 import org.springframework.http.HttpStatus
@@ -49,4 +50,14 @@ class CustomizedResponseEntityExceptionHandler: ResponseEntityExceptionHandler()
         return ResponseEntity<ExceptionResponse>(exceptionResponse, HttpStatus.NOT_FOUND)
     }
 
+    @ExceptionHandler(InvalidJwtAuthenticationException::class)
+    fun handleInvalidJwtAuthenticationException(ex: Exception, request: WebRequest):
+            ResponseEntity<ExceptionResponse> {
+        val exceptionResponse = ExceptionResponse(
+            Date(),
+            ex.message,
+            request.getDescription(false)
+        )
+        return ResponseEntity<ExceptionResponse>(exceptionResponse, HttpStatus.FORBIDDEN)
+    }
 }
